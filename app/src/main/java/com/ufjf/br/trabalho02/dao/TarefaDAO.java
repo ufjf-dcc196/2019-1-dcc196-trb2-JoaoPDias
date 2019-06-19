@@ -1,4 +1,57 @@
 package com.ufjf.br.trabalho02.dao;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+
+import com.ufjf.br.trabalho02.contract.TarefaContract;
+import com.ufjf.br.trabalho02.contract.TarefaDBHelper;
+import com.ufjf.br.trabalho02.model.Tarefa;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public class TarefaDAO {
+    private static final TarefaDAO tarefaDAO = new TarefaDAO();
+
+    public static TarefaDAO getInstance() {
+        return tarefaDAO;
+    }
+
+    private TarefaDAO() {
+    }
+
+    public Long save(Tarefa tarefa, Context context){
+        TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
+        SQLiteDatabase db = tarefaDBHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_TITULO,tarefa.getTitulo());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO,tarefa.getDescricao());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORALIMITE,tarefa.getHorarioCriacao());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date()));
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_ESTADO,tarefa.getEstado().getValor());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_GRAUDIFICULDADE,tarefa.getGrau().getGrau());
+        return db.insert(TarefaContract.Tarefa.TABLE_NAME, null, values);
+    }
+
+    public Cursor getTarefasByEstado(Context context){
+        TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
+        SQLiteDatabase db = tarefaDBHelper.getReadableDatabase();
+        String[] visao = {
+                TarefaContract.Tarefa._ID,
+                TarefaContract.Tarefa.COLUMN_NAME_TITULO,
+                TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO,
+                TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU,
+                TarefaContract.Tarefa.COLUMN_NAME_DATAHORALIMITE,
+                TarefaContract.Tarefa.COLUMN_NAME_GRAUDIFICULDADE,
+                TarefaContract.Tarefa.COLUMN_NAME_ESTADO
+        };
+        //String selecao = BibliotecaContract.Livro.COLUMN_NAME_ANO + " > ?";
+        //String[] args = {"1950"};
+        String sort = TarefaContract.Tarefa.COLUMN_NAME_ESTADO + " ASC";
+        return db.query(TarefaContract.Tarefa.TABLE_NAME, visao, null, null, null, null, sort);
+    }
 }
