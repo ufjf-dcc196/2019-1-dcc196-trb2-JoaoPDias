@@ -1,16 +1,19 @@
 package com.ufjf.br.trabalho02.model;
 
-public enum Estado {
-    FAZER(1,"A Fazer"),EXECUCAO(2,"Em Execução"),BlOQUEADA(3,"Bloqueada"),CONCLUIDA(4,"Concluída");
+import java.util.HashMap;
+import java.util.Map;
 
+public enum Estado {
+    FAZER(1, "A Fazer"), EXECUCAO(4, "Em Execução"), BlOQUEADA(2, "Bloqueada"), CONCLUIDA(3, "Concluída");
+    private static Map map = new HashMap<>();
     private String texto;
     private int valor;
+
     Estado(int i, String texto) {
         this.texto = texto;
         this.valor = i;
     }
 
-    @org.jetbrains.annotations.Contract(pure = true)
     public String getTexto() {
         return texto;
     }
@@ -18,5 +21,20 @@ public enum Estado {
 
     public int getValor() {
         return valor;
+    }
+
+    static {
+        for (Estado estado : Estado.values()) {
+            map.put(estado.valor, estado);
+        }
+    }
+
+    public static Estado valueOf(int estado) {
+        return (Estado) map.get(estado);
+    }
+
+    @Override
+    public String toString(){
+        return this.texto;
     }
 }
