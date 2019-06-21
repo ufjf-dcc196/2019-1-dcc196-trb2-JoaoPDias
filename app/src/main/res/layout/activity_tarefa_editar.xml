@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent" />
     <EditText
-        android:id="@+id/edt_titulo"
+        android:id="@+id/edt_tituloEditar"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="26dp"
@@ -24,7 +24,7 @@
         android:inputType="textAutoComplete"/>
 
     <EditText
-        android:id="@+id/edt_descricao"
+        android:id="@+id/edt_descricaoEditar"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -34,7 +34,7 @@
         android:inputType="none" />
 
     <Spinner
-        android:id="@+id/spinnerGrau"
+        android:id="@+id/spinnerGrauEditar"
         style="@android:style/Widget.Material.Spinner.Underlined"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         android:theme="@style/MatchSpinnerTheme" />
 
     <Spinner
-        android:id="@+id/spinnerEstado"
+        android:id="@+id/spinnerEstadoEditar"
         style="@android:style/Widget.Material.Spinner.Underlined"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
         android:theme="@style/MatchSpinnerTheme" />
 
     <EditText
-        android:id="@+id/edt_date"
+        android:id="@+id/edt_dateEditar"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -70,7 +70,7 @@
         android:inputType="date" />
 
     <EditText
-        android:id="@+id/edt_hora"
+        android:id="@+id/edt_horaEditar"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -80,7 +80,7 @@
         android:inputType="none" />
 
     <Button
-        android:id="@+id/buttonSalvarTarefa"
+        android:id="@+id/buttonSalvarTarefaEditar"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

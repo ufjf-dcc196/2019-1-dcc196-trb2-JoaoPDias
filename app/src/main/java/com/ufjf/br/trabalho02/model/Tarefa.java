@@ -1,12 +1,16 @@
 package com.ufjf.br.trabalho02.model;
 
+
+
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class Tarefa {
+public class Tarefa implements Serializable {
     private Long id;
     private String titulo;
     private String descricao;
@@ -123,5 +127,11 @@ public class Tarefa {
                         this.getHorarioAtualizacao(),
                         this.getGrau().getDescricao(),
                         this.getEstado().getTexto());
+    }
+
+    public Calendar getCalendar(){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(this.dataLimite);
+            return cal;
     }
 }

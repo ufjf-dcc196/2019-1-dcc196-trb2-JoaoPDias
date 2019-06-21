@@ -27,14 +27,24 @@ public class TarefaDAO {
     public Long save(Tarefa tarefa, Context context){
         TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
         SQLiteDatabase db = tarefaDBHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_TITULO,tarefa.getTitulo());
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO,tarefa.getDescricao());
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORALIMITE,tarefa.getHorarioCriacao());
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date()));
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_ESTADO,tarefa.getEstado().getValor());
-        values.put(TarefaContract.Tarefa.COLUMN_NAME_GRAUDIFICULDADE,tarefa.getGrau().getGrau());
-        return db.insert(TarefaContract.Tarefa.TABLE_NAME, null, values);
+        return db.insert(TarefaContract.Tarefa.TABLE_NAME, null, toValues(tarefa));
+    }
+    public Integer update(Tarefa tarefa, Context context){
+        TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
+        SQLiteDatabase db = tarefaDBHelper.getWritableDatabase();
+        return db.update(TarefaContract.Tarefa.TABLE_NAME, toValues(tarefa),TarefaContract.Tarefa._ID+"=?",toArgs(tarefa));
+    }
+
+    public Integer delete(Tarefa tarefa,Context context){
+        TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
+        SQLiteDatabase db = tarefaDBHelper.getWritableDatabase();
+        return db.delete(TarefaContract.Tarefa.TABLE_NAME,TarefaContract.Tarefa._ID+"=?",toArgs(tarefa));
+
+    }
+
+    private String[] toArgs(Tarefa tarefa) {
+        String[] args = {tarefa.getId().toString()};
+        return args;
     }
 
     public Cursor getTarefasByEstado(Context context){
@@ -53,5 +63,16 @@ public class TarefaDAO {
         //String[] args = {"1950"};
         String sort = TarefaContract.Tarefa.COLUMN_NAME_ESTADO + " ASC";
         return db.query(TarefaContract.Tarefa.TABLE_NAME, visao, null, null, null, null, sort);
+    }
+
+    public ContentValues toValues(Tarefa tarefa){
+        ContentValues values = new ContentValues();
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_TITULO,tarefa.getTitulo());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO,tarefa.getDescricao());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORALIMITE,tarefa.getHorarioCriacao());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU, new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date()));
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_ESTADO,tarefa.getEstado().getValor());
+        values.put(TarefaContract.Tarefa.COLUMN_NAME_GRAUDIFICULDADE,tarefa.getGrau().getGrau());
+        return values;
     }
 }
