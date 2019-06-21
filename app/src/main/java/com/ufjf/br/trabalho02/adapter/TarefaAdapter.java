@@ -2,6 +2,7 @@ package com.ufjf.br.trabalho02.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.contract.TarefaContract;
+import com.ufjf.br.trabalho02.model.Estado;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 import java.text.ParseException;
@@ -46,9 +48,7 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         ViewHolder holder = new ViewHolder(tarefaView);
         return holder;
     }
-
-    @Override
-    public void onBindViewHolder(@NonNull TarefaAdapter.ViewHolder viewHolder, int i) {
+    public Tarefa getTarefa(int position){
         int idxTitulo = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_TITULO);
         int idxDescricao = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO);
         int idxdataAtu = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU);
@@ -56,18 +56,26 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         int idxEstado = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_ESTADO);
         int idxGrau = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_GRAUDIFICULDADE);
         int idxId = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa._ID);
-        cursor.moveToPosition(i);
+        cursor.moveToPosition(position);
         Tarefa tarefa = null;
         try {
-             tarefa = new Tarefa(cursor.getLong(idxId),cursor.getString(idxTitulo),
+            tarefa = new Tarefa(cursor.getLong(idxId),cursor.getString(idxTitulo),
                     cursor.getString(idxDescricao),
                     cursor.getString(idxdataAtu),
                     cursor.getString(idxdataLimite),
                     cursor.getInt(idxEstado),
                     cursor.getInt(idxGrau));
-            viewHolder.txtTitulo.setText(tarefa.makeDescription());
         } catch (ParseException e) {
             e.printStackTrace();
+        }
+        return tarefa;
+    }
+    @Override
+    public void onBindViewHolder(@NonNull TarefaAdapter.ViewHolder viewHolder, int i) {
+        Tarefa tarefa = getTarefa(i);
+        viewHolder.txtTitulo.setText(tarefa.makeDescription());
+        if(tarefa.getEstado().equals(Estado.CONCLUIDA)){
+            viewHolder.txtTitulo.setTextColor(Color.parseColor("#4CAF50"));
         }
     }
 

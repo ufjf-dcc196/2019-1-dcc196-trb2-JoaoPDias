@@ -1,8 +1,10 @@
 package com.ufjf.br.trabalho02.activity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -65,6 +67,10 @@ public class TarefaInsertActivity extends AppCompatActivity implements
                     try {
                         Tarefa tarefa = new Tarefa(titulo, descricao, grau, estado, dataLimite);
                         TarefaDAO.getInstance().save(tarefa, TarefaInsertActivity.this);
+                        Intent intent = new Intent();
+                        intent.putExtra("tarefa", tarefa);
+                        setResult(Activity.RESULT_OK, intent);
+                        finish();
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }

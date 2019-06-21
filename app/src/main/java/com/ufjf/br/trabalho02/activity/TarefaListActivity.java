@@ -1,9 +1,11 @@
 package com.ufjf.br.trabalho02.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -23,13 +25,15 @@ import android.widget.Toast;
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.adapter.TarefaAdapter;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
+import com.ufjf.br.trabalho02.model.Tarefa;
 
 public class TarefaListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private TarefaAdapter adapter;
-    public static final int REQUEST_TAREFA = 1;
+    public static final int REQUEST_TAREFA_CADASTRAR = 1;
+    public static final int REQUEST_TAREFA_EDITAR = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +53,9 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
         adapter.setOnTarefaClickListener(new TarefaAdapter.OnTarefaClickListener() {
             @Override
             public void onTarefaClick(View tarefaView, int position) {
-                Toast.makeText(TarefaListActivity.this,"Teste",Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(TarefaListActivity.this,TarefaEditarActivity.class);
+                intent.putExtra("tarefa",adapter.getTarefa(position));
+                startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA_EDITAR);
             }
         });
         rv.setAdapter(adapter);
@@ -62,7 +68,7 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(TarefaListActivity.this, TarefaInsertActivity.class);
-                        startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA);
+                        startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA_CADASTRAR);
                     }
                 });
     }
@@ -93,6 +99,22 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
            super.onBackPressed();
        }
    }
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == TarefaListActivity.REQUEST_TAREFA_CADASTRAR) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(this,"Cadastro realizado com sucesso",Toast.LENGTH_SHORT).show();
+                this.adapter.setCursor(TarefaDAO.getInstance().getTarefasByEstado(this));
+            }
+        }
+        if (requestCode == TarefaListActivity.REQUEST_TAREFA_EDITAR) {
+            if (resultCode == Activity.RESULT_OK) {
+                Toast.makeText(this,"Edição realizado com sucesso",Toast.LENGTH_SHORT).show();
+                this.adapter.setCursor(TarefaDAO.getInstance().getTarefasByEstado(this));
+            }
+        }
+
+    }
 
 
 }
