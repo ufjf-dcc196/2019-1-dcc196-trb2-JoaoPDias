@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.TarefaEditarActivity"></activity>
+        <activity android:name=".activity.EtiquetaInsertActivity"></activity>
+        <activity android:name=".activity.EtiquetaListActivity" />
+        <activity android:name=".activity.TarefaEditarActivity" />
         <activity android:name=".activity.TarefaInsertActivity" />
         <activity
             android:name=".activity.TarefaListActivity"

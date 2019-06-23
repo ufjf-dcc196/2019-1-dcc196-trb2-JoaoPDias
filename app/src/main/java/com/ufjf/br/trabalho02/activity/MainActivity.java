@@ -12,9 +12,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 import com.ufjf.br.trabalho02.R;
+import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
+import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Estado;
+import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.GrauDificuldade;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
@@ -38,8 +45,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = (NavigationView) findViewById(R.id.navView);
         navigationView.setNavigationItemSelectedListener(this);
         Tarefa tarefa = new Tarefa().setDescricao("Teste").setEstado(Estado.EXECUCAO).setDataLimite(new Date()).setGrau(GrauDificuldade.MUITODIFICIL).setTitulo("Teste").setGrau(GrauDificuldade.DIFICIL);
-        TarefaDAO.getInstance().save(tarefa,this);
-
+        Etiqueta etiqueta = new Etiqueta().setDescricao("Testando");
+        tarefa = TarefaDAO.getInstance().save(tarefa,this);
+        etiqueta = EtiquetaDAO.getInstance().save(etiqueta,this);
+        EtiquetaTarefaDAO.getInstance().save(etiqueta,tarefa,this);
 
     }
 
@@ -52,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
             case R.id.nav_item_etiqueta: {
-                Toast.makeText(this, "Etiqueta", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, EtiquetaListActivity.class);
+                startActivity(intent);
                 break;
             }
 
