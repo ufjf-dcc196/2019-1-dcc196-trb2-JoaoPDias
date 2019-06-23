@@ -7,7 +7,29 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-    <include layout="@layout/toolbar" />
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/view_list"
+            android:background="@color/cardview_light_background"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Delete"
+            android:src="@drawable/ic_list_blue_24dp"
+            android:layout_gravity="center" />
+    </LinearLayout>
+
     <android.support.design.widget.NavigationView
         android:id="@+id/navView"
         android:layout_width="match_parent"
