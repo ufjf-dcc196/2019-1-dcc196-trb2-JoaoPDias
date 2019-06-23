@@ -6,7 +6,10 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,13 +20,19 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
+import com.ufjf.br.trabalho02.adapter.EtiquetaTarefaAdapter;
+import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
+import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Estado;
+import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.GrauDificuldade;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class TarefaEditarActivity extends AppCompatActivity implements
@@ -33,6 +42,7 @@ public class TarefaEditarActivity extends AppCompatActivity implements
     private int mYear, mMonth, mDay, mHour, mMinute;
     private EditText txtDate, txtTime, txtTitulo, txtDescricao;
     private Spinner spinnerEstado, spinnerGrau;
+    private RecyclerView recyclerViewCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +71,15 @@ public class TarefaEditarActivity extends AppCompatActivity implements
         txtTime.setOnClickListener(this);
         this.updateDate();
         this.updateTime();
-        txtDate.setText(String.format(Locale.getDefault(),"%d/%02d/%d", this.mDay, this.mMonth + 1, this.mYear));
-        txtTime.setText(String.format(Locale.getDefault(),"%d:%d", this.mHour, this.mMinute));
+        txtDate.setText(String.format(Locale.getDefault(), "%d/%02d/%d", this.mDay, this.mMonth + 1, this.mYear));
+        txtTime.setText(String.format(Locale.getDefault(), "%d:%d", this.mHour, this.mMinute));
         txtDescricao.setText(this.tarefa.getDescricao());
         txtTitulo.setText(this.tarefa.getTitulo());
-
+        recyclerViewCheck = (RecyclerView) findViewById(R.id.recyclerviewTagsEditar);
+        final EtiquetaTarefaAdapter etiquetaTarefaAdapter = new EtiquetaTarefaAdapter(EtiquetaDAO.getInstance().getEtiquetas(TarefaEditarActivity.this));
+        etiquetaTarefaAdapter.setItemStateArray(EtiquetaTarefaDAO.getInstance().getEtiquetasByTarefa(TarefaEditarActivity.this, this.tarefa));
+        recyclerViewCheck.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerViewCheck.setAdapter(etiquetaTarefaAdapter);
         Button botaoSalvarTarefa = findViewById(R.id.buttonSalvarTarefaEditar);
         botaoSalvarTarefa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,10 +89,22 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                     GrauDificuldade grau = (GrauDificuldade) spinnerGrau.getSelectedItem();
                     String dataLimite = String.format("%s %s", txtDate.getText().toString(), txtTime.getText().toString());
                     String titulo = txtTitulo.getText().toString();
-                    String descricao = txtTitulo.getText().toString();
+                    String descricao = txtDescricao.getText().toString();
+                    SparseBooleanArray escolhidos = etiquetaTarefaAdapter.getItemStateArray();
+                    List<Etiqueta> etiquetaList = new ArrayList<>();
+                    for (int i = 0; i < escolhidos.size(); i++) {
+                        int key = escolhidos.keyAt(i);
+                        if (escolhidos.get(key)) {
+                            etiquetaList.add(etiquetaTarefaAdapter.getEtiqueta(key));
+                        }
+                    }
                     try {
-                        TarefaEditarActivity.this.tarefa.setTitulo(titulo).setDescricao(descricao).setHorarioCriacao(dataLimite).setGrau(grau).setEstado(estado);
+                        TarefaEditarActivity.this.tarefa.setTitulo(titulo).setDescricao(descricao).setHorarioCriacao(dataLimite).setGrau(grau).setEstado(estado).setEtiquetas(etiquetaList);
                         TarefaDAO.getInstance().update(tarefa, TarefaEditarActivity.this);
+                        EtiquetaTarefaDAO.getInstance().delete(tarefa, TarefaEditarActivity.this);
+                        for (Etiqueta e : tarefa.getEtiquetas()) {
+                            EtiquetaTarefaDAO.getInstance().save(e, tarefa, TarefaEditarActivity.this);
+                        }
                         Intent intent = new Intent();
                         intent.putExtra("tarefa", tarefa);
                         setResult(Activity.RESULT_OK, intent);
@@ -120,6 +146,13 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                 return apto;
             }
         });
+        Button botaoLimparEtiqueta = findViewById(R.id.buttonLimparEtiqueta);
+        botaoLimparEtiqueta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etiquetaTarefaAdapter.limpar();
+            }
+        });
     }
 
     @Override
@@ -136,11 +169,11 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-                            txtDate.setText(String.format(Locale.getDefault(),"%d/%02d/%d", dayOfMonth, monthOfYear+1, year));
+                            txtDate.setText(String.format(Locale.getDefault(), "%d/%02d/%d", dayOfMonth, monthOfYear + 1, year));
                             Calendar calendar = Calendar.getInstance();
-                            TarefaEditarActivity.this.calendar.set(Calendar.YEAR,year);
-                            TarefaEditarActivity.this.calendar.set(Calendar.MONTH,monthOfYear);
-                            TarefaEditarActivity.this.calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                            TarefaEditarActivity.this.calendar.set(Calendar.YEAR, year);
+                            TarefaEditarActivity.this.calendar.set(Calendar.MONTH, monthOfYear);
+                            TarefaEditarActivity.this.calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         }
                     }, mYear, mMonth, mDay);
             datePickerDialog.show();
@@ -148,7 +181,7 @@ public class TarefaEditarActivity extends AppCompatActivity implements
         if (v == txtTime && hasFocus) {
 
             // Get Current Time
-           this.updateTime();
+            this.updateTime();
 
             // Launch Time Picker Dialog
             TimePickerDialog timePickerDialog = new TimePickerDialog(this,
@@ -158,22 +191,22 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
 
-                            txtTime.setText(String.format(Locale.getDefault(),"%d:%d", hourOfDay, minute));
-                            TarefaEditarActivity.this.calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                            TarefaEditarActivity.this.calendar.set(Calendar.MINUTE,minute);
+                            txtTime.setText(String.format(Locale.getDefault(), "%d:%d", hourOfDay, minute));
+                            TarefaEditarActivity.this.calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                            TarefaEditarActivity.this.calendar.set(Calendar.MINUTE, minute);
                         }
                     }, mHour, mMinute, true);
             timePickerDialog.show();
         }
     }
 
-    private void updateDate(){
+    private void updateDate() {
         mYear = this.calendar.get(Calendar.YEAR);
         mMonth = this.calendar.get(Calendar.MONTH);
         mDay = this.calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private void updateTime(){
+    private void updateTime() {
         mHour = this.calendar.get(Calendar.HOUR_OF_DAY);
         mMinute = this.calendar.get(Calendar.MINUTE);
     }
@@ -192,11 +225,11 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-                            txtDate.setText(String.format(Locale.getDefault(),"%d/%02d/%d", dayOfMonth, monthOfYear+1, year));
+                            txtDate.setText(String.format(Locale.getDefault(), "%d/%02d/%d", dayOfMonth, monthOfYear + 1, year));
                             Calendar calendar = Calendar.getInstance();
-                            TarefaEditarActivity.this.calendar.set(Calendar.YEAR,year);
-                            TarefaEditarActivity.this.calendar.set(Calendar.MONTH,monthOfYear);
-                            TarefaEditarActivity.this.calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                            TarefaEditarActivity.this.calendar.set(Calendar.YEAR, year);
+                            TarefaEditarActivity.this.calendar.set(Calendar.MONTH, monthOfYear);
+                            TarefaEditarActivity.this.calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                         }
                     }, mYear, mMonth, mDay);
             datePickerDialog.show();
@@ -214,9 +247,9 @@ public class TarefaEditarActivity extends AppCompatActivity implements
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
 
-                            txtTime.setText(String.format(Locale.getDefault(),"%d:%d", hourOfDay, minute));
-                            TarefaEditarActivity.this.calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
-                            TarefaEditarActivity.this.calendar.set(Calendar.MINUTE,minute);
+                            txtTime.setText(String.format(Locale.getDefault(), "%d:%d", hourOfDay, minute));
+                            TarefaEditarActivity.this.calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                            TarefaEditarActivity.this.calendar.set(Calendar.MINUTE, minute);
                         }
                     }, mHour, mMinute, true);
             timePickerDialog.show();

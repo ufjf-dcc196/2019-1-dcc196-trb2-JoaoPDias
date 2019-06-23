@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,20 +23,27 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
+import com.ufjf.br.trabalho02.adapter.EtiquetaTarefaAdapter;
 import com.ufjf.br.trabalho02.contract.TarefaDBHelper;
+import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
+import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Estado;
+import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.GrauDificuldade;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class TarefaInsertActivity extends AppCompatActivity implements
         View.OnFocusChangeListener {
     EditText txtDate, txtTime, txtTitulo, txtDescricao;
     Spinner spinnerEstado, spinnerGrau;
     private int mYear, mMonth, mDay, mHour, mMinute;
+    private RecyclerView recyclerViewCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +56,17 @@ public class TarefaInsertActivity extends AppCompatActivity implements
         txtDate.setOnFocusChangeListener(this);
         txtTime.setOnFocusChangeListener(this);
         spinnerEstado = (Spinner) findViewById(R.id.spinnerEstado);
-        ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.spinner_layout_item, Estado.values());
+        final ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.spinner_layout_item, Estado.values());
         adapter.setDropDownViewResource(R.layout.spinner_layout_item);
         spinnerEstado.setAdapter(adapter);
         spinnerGrau = (Spinner) findViewById(R.id.spinnerGrau);
         ArrayAdapter adapterGrau = new ArrayAdapter<>(this, R.layout.spinner_layout_item, GrauDificuldade.values());
         adapterGrau.setDropDownViewResource(R.layout.spinner_layout_item);
         spinnerGrau.setAdapter(adapterGrau);
-
+        recyclerViewCheck = (RecyclerView) findViewById(R.id.recyclerviewTags);
+        final EtiquetaTarefaAdapter etiquetaTarefaAdapter = new EtiquetaTarefaAdapter(EtiquetaDAO.getInstance().getEtiquetas(TarefaInsertActivity.this));
+        recyclerViewCheck.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerViewCheck.setAdapter(etiquetaTarefaAdapter);
         Button botaoSalvarTarefa = findViewById(R.id.buttonSalvarTarefa);
         botaoSalvarTarefa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,10 +76,21 @@ public class TarefaInsertActivity extends AppCompatActivity implements
                     GrauDificuldade grau = (GrauDificuldade) spinnerGrau.getSelectedItem();
                     String dataLimite = String.format("%s %s", txtDate.getText().toString(), txtTime.getText().toString());
                     String titulo = txtTitulo.getText().toString();
-                    String descricao = txtTitulo.getText().toString();
+                    String descricao = txtDescricao.getText().toString();
+                    SparseBooleanArray escolhidos = etiquetaTarefaAdapter.getItemStateArray();
+                    List<Etiqueta> etiquetaList = new ArrayList<>();
+                    for(int i = 0; i < escolhidos.size();i++){
+                        int key = escolhidos.keyAt(i);
+                        // get the object by the key.
+                         etiquetaList.add(etiquetaTarefaAdapter.getEtiqueta(key));
+                    }
                     try {
-                        Tarefa tarefa = new Tarefa(titulo, descricao, grau, estado, dataLimite);
+                        Tarefa tarefa = new Tarefa(titulo, descricao, grau, estado, dataLimite,etiquetaList);
                         TarefaDAO.getInstance().save(tarefa, TarefaInsertActivity.this);
+                        EtiquetaTarefaDAO.getInstance().delete(tarefa,TarefaInsertActivity.this);
+                        for (Etiqueta e:tarefa.getEtiquetas()) {
+                            EtiquetaTarefaDAO.getInstance().save(e,tarefa,TarefaInsertActivity.this);
+                        }
                         Intent intent = new Intent();
                         intent.putExtra("tarefa", tarefa);
                         setResult(Activity.RESULT_OK, intent);

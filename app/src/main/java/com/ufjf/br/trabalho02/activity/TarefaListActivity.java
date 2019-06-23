@@ -20,11 +20,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.adapter.TarefaAdapter;
+import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
+import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 public class TarefaListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,13 +35,19 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private TarefaAdapter adapter;
+    private Etiqueta etiqueta;
     public static final int REQUEST_TAREFA_CADASTRAR = 1;
     public static final int REQUEST_TAREFA_EDITAR = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarefa_list);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        this.toolbar = findViewById(R.id.toolbar);
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            this.etiqueta = (Etiqueta) bundle.get("etiqueta");
+        }
         setSupportActionBar(toolbar);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
@@ -49,12 +58,16 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
         navigationView.setNavigationItemSelectedListener(this);
 
         final RecyclerView rv = findViewById(R.id.recyclerTarefa);
-        this.adapter = new TarefaAdapter(TarefaDAO.getInstance().getTarefasByEstado(this));
+        if (this.etiqueta == null) {
+            this.adapter = new TarefaAdapter(TarefaDAO.getInstance().getTarefasByEstado(this), null);
+        } else {
+            this.adapter = new TarefaAdapter(EtiquetaTarefaDAO.getInstance().getTarefasByEtiqueta(this, etiqueta), etiqueta);
+        }
         adapter.setOnTarefaClickListener(new TarefaAdapter.OnTarefaClickListener() {
             @Override
             public void onTarefaClick(View tarefaView, int position) {
-                Intent intent = new Intent(TarefaListActivity.this,TarefaEditarActivity.class);
-                intent.putExtra("tarefa",adapter.getTarefa(position));
+                Intent intent = new Intent(TarefaListActivity.this, TarefaEditarActivity.class);
+                intent.putExtra("tarefa", adapter.getTarefa(position));
                 startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA_EDITAR);
             }
         });
@@ -65,24 +78,28 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
         rv.setLayoutManager(new LinearLayoutManager(this));
         Button botaoTarefa = findViewById(R.id.buttonCadastrarTarefa);
         botaoTarefa.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(TarefaListActivity.this, TarefaInsertActivity.class);
-                        startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA_CADASTRAR);
-                    }
-                });
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TarefaListActivity.this, TarefaInsertActivity.class);
+                startActivityForResult(intent, TarefaListActivity.REQUEST_TAREFA_CADASTRAR);
+            }
+        });
+
+
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_item_tarefa: {
-                Intent intent = new Intent(TarefaListActivity.this,TarefaListActivity.class);
+                Intent intent = getIntent();
+                finish();
                 startActivity(intent);
                 break;
             }
             case R.id.nav_item_etiqueta: {
-                Toast.makeText(this, "Etiqueta", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TarefaListActivity.this, EtiquetaListActivity.class);
+                startActivity(intent);
                 break;
             }
 
@@ -91,26 +108,35 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
         return true;
     }
 
-   @Override
-   public void onBackPressed() {
-       if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-           drawerLayout.closeDrawer(GravityCompat.START);
-       } else {
-           super.onBackPressed();
-       }
-   }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == TarefaListActivity.REQUEST_TAREFA_CADASTRAR) {
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(this,"Cadastro realizado com sucesso",Toast.LENGTH_SHORT).show();
-                this.adapter.setCursor(TarefaDAO.getInstance().getTarefasByEstado(this));
+                Toast.makeText(this, "Cadastro realizado com sucesso", Toast.LENGTH_SHORT).show();
+                if (this.etiqueta == null) {
+                    this.adapter = new TarefaAdapter(TarefaDAO.getInstance().getTarefasByEstado(this), null);
+                } else {
+                    this.adapter = new TarefaAdapter(EtiquetaTarefaDAO.getInstance().getTarefasByEtiqueta(this, etiqueta), etiqueta);
+                }
             }
         }
         if (requestCode == TarefaListActivity.REQUEST_TAREFA_EDITAR) {
             if (resultCode == Activity.RESULT_OK) {
-                Toast.makeText(this,"Edição realizado com sucesso",Toast.LENGTH_SHORT).show();
-                this.adapter.setCursor(TarefaDAO.getInstance().getTarefasByEstado(this));
+                Toast.makeText(this, "Edição realizado com sucesso", Toast.LENGTH_SHORT).show();
+                if (this.etiqueta == null) {
+                    this.adapter = new TarefaAdapter(TarefaDAO.getInstance().getTarefasByEstado(this), null);
+                } else {
+                    this.adapter = new TarefaAdapter(EtiquetaTarefaDAO.getInstance().getTarefasByEtiqueta(this, etiqueta), etiqueta);
+                }
+
             }
         }
 
