@@ -8,11 +8,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ufjf.br.trabalho02.R;
+import com.ufjf.br.trabalho02.activity.TarefaListActivity;
 import com.ufjf.br.trabalho02.contract.TarefaContract;
+import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
+import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Estado;
+import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 import java.text.ParseException;
@@ -20,6 +25,7 @@ import java.text.ParseException;
 public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder> {
     private Cursor cursor;
     private OnTarefaClickListener listener;
+    private Etiqueta etiqueta;
 
     public interface OnTarefaClickListener {
         void onTarefaClick(View tarefaView, int position);
@@ -29,8 +35,9 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         this.listener = listener;
     }
 
-    public TarefaAdapter(Cursor c) {
+    public TarefaAdapter(Cursor c, Etiqueta etiqueta) {
         cursor = c;
+        this.etiqueta = etiqueta;
         notifyDataSetChanged();
     }
 
@@ -39,16 +46,18 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
+
     @NonNull
     @Override
     public TarefaAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View tarefaView = inflater.inflate(R.layout.itemlista_layout, viewGroup, false);
-        ViewHolder holder = new ViewHolder(tarefaView);
+        ViewHolder holder = new ViewHolder(tarefaView, context);
         return holder;
     }
-    public Tarefa getTarefa(int position){
+
+    public Tarefa getTarefa(int position) {
         int idxTitulo = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_TITULO);
         int idxDescricao = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO);
         int idxdataAtu = cursor.getColumnIndexOrThrow(TarefaContract.Tarefa.COLUMN_NAME_DATAHORAATU);
@@ -59,7 +68,7 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         cursor.moveToPosition(position);
         Tarefa tarefa = null;
         try {
-            tarefa = new Tarefa(cursor.getLong(idxId),cursor.getString(idxTitulo),
+            tarefa = new Tarefa(cursor.getLong(idxId), cursor.getString(idxTitulo),
                     cursor.getString(idxDescricao),
                     cursor.getString(idxdataAtu),
                     cursor.getString(idxdataLimite),
@@ -70,13 +79,25 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         }
         return tarefa;
     }
+
     @Override
-    public void onBindViewHolder(@NonNull TarefaAdapter.ViewHolder viewHolder, int i) {
-        Tarefa tarefa = getTarefa(i);
+    public void onBindViewHolder(@NonNull final TarefaAdapter.ViewHolder viewHolder, final int i) {
+        final Tarefa tarefa = getTarefa(i);
         viewHolder.txtTitulo.setText(tarefa.makeDescription());
-        if(tarefa.getEstado().equals(Estado.CONCLUIDA)){
+        if (tarefa.getEstado().equals(Estado.CONCLUIDA)) {
             viewHolder.txtTitulo.setTextColor(Color.parseColor("#4CAF50"));
         }
+        viewHolder.delete.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                TarefaDAO.getInstance().delete(tarefa, viewHolder.context);
+                if (etiqueta != null) {
+                    setCursor(EtiquetaTarefaDAO.getInstance().getTarefasByEtiqueta(viewHolder.context, etiqueta));
+                } else {
+                    setCursor(TarefaDAO.getInstance().getTarefasByEstado(viewHolder.context));
+                }
+                notifyItemRemoved(i); // bug ao final da lista
+            }
+        });
     }
 
     @Override
@@ -90,10 +111,13 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtTitulo = itemView.findViewById(R.id.txt_Tarefa_item);
+        private TextView txtTitulo = itemView.findViewById(R.id.layout_text_item);
+        private ImageButton delete = (ImageButton) itemView.findViewById(R.id.delete_button);
+        private Context context;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView, Context context) {
             super(itemView);
+            this.context = context;
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

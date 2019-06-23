@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Tarefa implements Serializable {
@@ -19,7 +20,7 @@ public class Tarefa implements Serializable {
     private Date dataLimite;
     private Date dataAtu;
     private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
+    private List<Etiqueta> etiquetas;
     public Tarefa setDataLimite(Date dataLimite) {
         this.dataLimite = dataLimite;
         return this;
@@ -41,12 +42,13 @@ public class Tarefa implements Serializable {
 
     }
 
-    public Tarefa(String titulo, String descricao, GrauDificuldade grau, Estado estado, String dataLimite) throws ParseException {
+    public Tarefa(String titulo, String descricao, GrauDificuldade grau, Estado estado, String dataLimite, List<Etiqueta> etiquetas) throws ParseException {
         this.titulo = titulo;
         this.descricao = descricao;
         this.grau = grau;
         this.estado = estado;
         this.dataLimite = format.parse(dataLimite);
+        this.etiquetas = etiquetas;
     }
 
     public Tarefa(){};
@@ -133,5 +135,14 @@ public class Tarefa implements Serializable {
             Calendar cal = Calendar.getInstance();
             cal.setTime(this.dataLimite);
             return cal;
+    }
+
+    public List<Etiqueta> getEtiquetas() {
+        return etiquetas;
+    }
+
+    public Tarefa setEtiquetas(List<Etiqueta> etiquetas) {
+        this.etiquetas = etiquetas;
+        return this;
     }
 }

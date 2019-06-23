@@ -24,10 +24,11 @@ public class TarefaDAO {
     private TarefaDAO() {
     }
 
-    public Long save(Tarefa tarefa, Context context){
+    public Tarefa save(Tarefa tarefa, Context context){
         TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
         SQLiteDatabase db = tarefaDBHelper.getWritableDatabase();
-        return db.insert(TarefaContract.Tarefa.TABLE_NAME, null, toValues(tarefa));
+        tarefa.setId(db.insert(TarefaContract.Tarefa.TABLE_NAME, null, toValues(tarefa)));
+        return tarefa;
     }
     public Integer update(Tarefa tarefa, Context context){
         TarefaDBHelper tarefaDBHelper = new TarefaDBHelper(context);
