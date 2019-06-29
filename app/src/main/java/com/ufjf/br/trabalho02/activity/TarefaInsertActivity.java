@@ -3,16 +3,13 @@ package com.ufjf.br.trabalho02.activity;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,7 +21,6 @@ import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.adapter.EtiquetaTarefaAdapter;
-import com.ufjf.br.trabalho02.contract.TarefaDBHelper;
 import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
 import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
@@ -40,8 +36,12 @@ import java.util.List;
 
 public class TarefaInsertActivity extends AppCompatActivity implements
         View.OnFocusChangeListener {
-    EditText txtDate, txtTime, txtTitulo, txtDescricao;
-    Spinner spinnerEstado, spinnerGrau;
+    private EditText txtDate;
+    private EditText txtTime;
+    private EditText txtTitulo;
+    private EditText txtDescricao;
+    private Spinner spinnerEstado;
+    private Spinner spinnerGrau;
     private int mYear, mMonth, mDay, mHour, mMinute;
     private RecyclerView recyclerViewCheck;
 
@@ -49,21 +49,21 @@ public class TarefaInsertActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarefa_insert);
-        txtTitulo = (EditText) findViewById(R.id.edt_titulo);
-        txtDescricao = (EditText) findViewById(R.id.edt_descricao);
-        txtDate = (EditText) findViewById(R.id.edt_date);
-        txtTime = (EditText) findViewById(R.id.edt_hora);
+        txtTitulo = findViewById(R.id.edt_titulo);
+        txtDescricao = findViewById(R.id.edt_descricao);
+        txtDate = findViewById(R.id.edt_date);
+        txtTime = findViewById(R.id.edt_hora);
         txtDate.setOnFocusChangeListener(this);
         txtTime.setOnFocusChangeListener(this);
-        spinnerEstado = (Spinner) findViewById(R.id.spinnerEstado);
+        spinnerEstado = findViewById(R.id.spinnerEstado);
         final ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.spinner_layout_item, Estado.values());
         adapter.setDropDownViewResource(R.layout.spinner_layout_item);
         spinnerEstado.setAdapter(adapter);
-        spinnerGrau = (Spinner) findViewById(R.id.spinnerGrau);
+        spinnerGrau = findViewById(R.id.spinnerGrau);
         ArrayAdapter adapterGrau = new ArrayAdapter<>(this, R.layout.spinner_layout_item, GrauDificuldade.values());
         adapterGrau.setDropDownViewResource(R.layout.spinner_layout_item);
         spinnerGrau.setAdapter(adapterGrau);
-        recyclerViewCheck = (RecyclerView) findViewById(R.id.recyclerviewTags);
+        recyclerViewCheck = findViewById(R.id.recyclerviewTags);
         final EtiquetaTarefaAdapter etiquetaTarefaAdapter = new EtiquetaTarefaAdapter(EtiquetaDAO.getInstance().getEtiquetas(TarefaInsertActivity.this));
         recyclerViewCheck.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerViewCheck.setAdapter(etiquetaTarefaAdapter);

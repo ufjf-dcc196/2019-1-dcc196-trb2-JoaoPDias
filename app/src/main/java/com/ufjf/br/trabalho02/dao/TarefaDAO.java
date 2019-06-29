@@ -4,14 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 
 import com.ufjf.br.trabalho02.contract.TarefaContract;
 import com.ufjf.br.trabalho02.contract.TarefaDBHelper;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class TarefaDAO {
@@ -44,8 +42,7 @@ public class TarefaDAO {
     }
 
     private String[] toArgs(Tarefa tarefa) {
-        String[] args = {tarefa.getId().toString()};
-        return args;
+        return new String[]{tarefa.getId().toString()};
     }
 
     public Cursor getTarefasByEstado(Context context){
@@ -66,7 +63,7 @@ public class TarefaDAO {
         return db.query(TarefaContract.Tarefa.TABLE_NAME, visao, null, null, null, null, sort);
     }
 
-    public ContentValues toValues(Tarefa tarefa){
+    private ContentValues toValues(Tarefa tarefa){
         ContentValues values = new ContentValues();
         values.put(TarefaContract.Tarefa.COLUMN_NAME_TITULO,tarefa.getTitulo());
         values.put(TarefaContract.Tarefa.COLUMN_NAME_DESCRICAO,tarefa.getDescricao());

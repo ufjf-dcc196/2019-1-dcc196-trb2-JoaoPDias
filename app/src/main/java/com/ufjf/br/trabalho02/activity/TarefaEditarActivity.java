@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class TarefaEditarActivity extends AppCompatActivity implements
         View.OnFocusChangeListener, View.OnClickListener {
@@ -49,14 +50,14 @@ public class TarefaEditarActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tarefa_editar);
         Bundle bundle = getIntent().getExtras();
-        this.tarefa = (Tarefa) bundle.get("tarefa");
-        this.calendar = this.tarefa.getCalendar();
-        txtTitulo = (EditText) findViewById(R.id.edt_tituloEditar);
-        txtDescricao = (EditText) findViewById(R.id.edt_descricaoEditar);
-        txtDate = (EditText) findViewById(R.id.edt_dateEditar);
-        txtTime = (EditText) findViewById(R.id.edt_horaEditar);
-        spinnerEstado = (Spinner) findViewById(R.id.spinnerEstadoEditar);
-        spinnerGrau = (Spinner) findViewById(R.id.spinnerGrauEditar);
+        this.tarefa = (Tarefa) Objects.requireNonNull(bundle).get("tarefa");
+        this.calendar = Objects.requireNonNull(this.tarefa).getCalendar();
+        txtTitulo = findViewById(R.id.edt_tituloEditar);
+        txtDescricao = findViewById(R.id.edt_descricaoEditar);
+        txtDate = findViewById(R.id.edt_dateEditar);
+        txtTime = findViewById(R.id.edt_horaEditar);
+        spinnerEstado = findViewById(R.id.spinnerEstadoEditar);
+        spinnerGrau = findViewById(R.id.spinnerGrauEditar);
         ArrayAdapter adapter = new ArrayAdapter<>(this, R.layout.spinner_layout_item, Estado.values());
         adapter.setDropDownViewResource(R.layout.spinner_layout_item);
         ArrayAdapter adapterGrau = new ArrayAdapter<>(this, R.layout.spinner_layout_item, GrauDificuldade.values());
@@ -75,7 +76,7 @@ public class TarefaEditarActivity extends AppCompatActivity implements
         txtTime.setText(String.format(Locale.getDefault(), "%d:%d", this.mHour, this.mMinute));
         txtDescricao.setText(this.tarefa.getDescricao());
         txtTitulo.setText(this.tarefa.getTitulo());
-        recyclerViewCheck = (RecyclerView) findViewById(R.id.recyclerviewTagsEditar);
+        recyclerViewCheck = findViewById(R.id.recyclerviewTagsEditar);
         final EtiquetaTarefaAdapter etiquetaTarefaAdapter = new EtiquetaTarefaAdapter(EtiquetaDAO.getInstance().getEtiquetas(TarefaEditarActivity.this));
         etiquetaTarefaAdapter.setItemStateArray(EtiquetaTarefaDAO.getInstance().getEtiquetasByTarefa(TarefaEditarActivity.this, this.tarefa));
         recyclerViewCheck.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));

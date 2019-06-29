@@ -23,10 +23,8 @@ import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.adapter.EtiquetaAdapter;
-import com.ufjf.br.trabalho02.adapter.TarefaAdapter;
 import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
 import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
-import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Etiqueta;
 
 public class EtiquetaListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +32,7 @@ public class EtiquetaListActivity extends AppCompatActivity implements Navigatio
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private EtiquetaAdapter adapter;
-    public static final int REQUEST_ETIQUETA_CADASTRAR = 1;
+    private static final int REQUEST_ETIQUETA_CADASTRAR = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +40,12 @@ public class EtiquetaListActivity extends AppCompatActivity implements Navigatio
         setContentView(R.layout.activity_etiqueta_list);
         this.toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.navView);
+        navigationView = findViewById(R.id.navView);
         navigationView.setNavigationItemSelectedListener(this);
 
         final RecyclerView rv = findViewById(R.id.recyclerEtiqueta);

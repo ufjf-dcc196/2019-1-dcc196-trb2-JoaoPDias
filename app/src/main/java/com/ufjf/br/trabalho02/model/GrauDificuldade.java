@@ -1,11 +1,13 @@
 package com.ufjf.br.trabalho02.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public enum GrauDificuldade {
     MUITOFACIL(1,"Muito Fácil"),FACIL(2,"Fácil"),MEDIO(3,"Médio"),DIFICIL(4,"Difícil"),MUITODIFICIL(5,"Muito Difícil");
-    private static Map map = new HashMap<>();
+    private static final Map map = new HashMap<>();
     private int grau;
     private String descricao;
     GrauDificuldade(int grau, String descricao){
@@ -31,6 +33,7 @@ public enum GrauDificuldade {
         return (GrauDificuldade) map.get(grau);
     }
 
+    @NotNull
     @Override
     public String toString(){
         return this.descricao;

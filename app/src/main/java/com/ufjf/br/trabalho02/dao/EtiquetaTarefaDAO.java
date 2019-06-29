@@ -54,8 +54,7 @@ public class EtiquetaTarefaDAO {
     }
 
     private String[] toArgs(Tarefa tarefa) {
-        String[] args = {tarefa.getId().toString()};
-        return args;
+        return new String[]{tarefa.getId().toString()};
     }
 
     public Cursor getTarefasByEtiqueta(Context context, Etiqueta etiqueta) {
@@ -70,7 +69,7 @@ public class EtiquetaTarefaDAO {
         return db.rawQuery(EtiquetasByTarefa, new String[]{String.valueOf(tarefa.getId())});
     }
 
-    public ContentValues toValues(Etiqueta etiqueta, Tarefa tarefa) {
+    private ContentValues toValues(Etiqueta etiqueta, Tarefa tarefa) {
         ContentValues values = new ContentValues();
         values.put(TarefaContract.EtiquetaTarefa.COLUMN_NAME_ETIQUETA, etiqueta.getIdEtiqueta());
         values.put(TarefaContract.EtiquetaTarefa.COLUMN_NAME_TAREFA, tarefa.getId());

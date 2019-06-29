@@ -10,12 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
 import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
@@ -36,13 +31,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.navView);
+        navigationView = findViewById(R.id.navView);
         navigationView.setNavigationItemSelectedListener(this);
         Tarefa tarefa = new Tarefa().setDescricao("Teste").setEstado(Estado.EXECUCAO).setDataLimite(new Date()).setGrau(GrauDificuldade.MUITODIFICIL).setTitulo("Teste").setGrau(GrauDificuldade.DIFICIL);
         Etiqueta etiqueta = new Etiqueta().setDescricao("Testando");

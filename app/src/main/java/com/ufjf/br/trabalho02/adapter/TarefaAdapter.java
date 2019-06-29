@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ufjf.br.trabalho02.R;
-import com.ufjf.br.trabalho02.activity.TarefaListActivity;
 import com.ufjf.br.trabalho02.contract.TarefaContract;
 import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
@@ -20,12 +19,14 @@ import com.ufjf.br.trabalho02.model.Estado;
 import com.ufjf.br.trabalho02.model.Etiqueta;
 import com.ufjf.br.trabalho02.model.Tarefa;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 
 public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder> {
     private Cursor cursor;
     private OnTarefaClickListener listener;
-    private Etiqueta etiqueta;
+    private final Etiqueta etiqueta;
 
     public interface OnTarefaClickListener {
         void onTarefaClick(View tarefaView, int position);
@@ -41,7 +42,7 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public void setCursor(Cursor c) {
+    private void setCursor(Cursor c) {
         cursor = c;
         notifyDataSetChanged();
     }
@@ -53,8 +54,7 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View tarefaView = inflater.inflate(R.layout.itemlista_layout, viewGroup, false);
-        ViewHolder holder = new ViewHolder(tarefaView, context);
-        return holder;
+        return new ViewHolder(tarefaView, context);
     }
 
     public Tarefa getTarefa(int position) {
@@ -106,14 +106,14 @@ public class TarefaAdapter extends RecyclerView.Adapter<TarefaAdapter.ViewHolder
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(@NotNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView txtTitulo = itemView.findViewById(R.id.layout_text_item);
-        private ImageButton delete = (ImageButton) itemView.findViewById(R.id.delete_button);
-        private Context context;
+        private final TextView txtTitulo = itemView.findViewById(R.id.layout_text_item);
+        private final ImageButton delete = itemView.findViewById(R.id.delete_button);
+        private final Context context;
 
         private ViewHolder(View itemView, Context context) {
             super(itemView);

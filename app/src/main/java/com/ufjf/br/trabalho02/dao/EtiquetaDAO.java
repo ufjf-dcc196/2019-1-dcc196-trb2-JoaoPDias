@@ -9,9 +9,6 @@ import com.ufjf.br.trabalho02.contract.TarefaContract;
 import com.ufjf.br.trabalho02.contract.TarefaDBHelper;
 import com.ufjf.br.trabalho02.model.Etiqueta;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class EtiquetaDAO {
     private static final EtiquetaDAO etiquetaDAO = new EtiquetaDAO();
 
@@ -42,8 +39,7 @@ public class EtiquetaDAO {
     }
 
     private String[] toArgs(Etiqueta etiqueta) {
-        String[] args = {etiqueta.getIdEtiqueta().toString()};
-        return args;
+        return new String[]{etiqueta.getIdEtiqueta().toString()};
     }
 
     public Cursor getEtiquetas(Context context){
@@ -59,7 +55,7 @@ public class EtiquetaDAO {
         return db.query(TarefaContract.Etiqueta.TABLE_NAME, visao, null, null, null, null, sort);
     }
 
-    public ContentValues toValues(Etiqueta etiqueta){
+    private ContentValues toValues(Etiqueta etiqueta){
         ContentValues values = new ContentValues();
         values.put(TarefaContract.Etiqueta.COLUMN_NAME_TITULO,etiqueta.getDescricao());
         return values;

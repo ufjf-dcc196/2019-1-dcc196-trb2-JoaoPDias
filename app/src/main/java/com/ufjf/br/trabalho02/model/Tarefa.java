@@ -5,7 +5,6 @@ package com.ufjf.br.trabalho02.model;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,7 @@ public class Tarefa implements Serializable {
     private Estado estado;
     private Date dataLimite;
     private Date dataAtu;
-    private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     private List<Etiqueta> etiquetas;
     public Tarefa setDataLimite(Date dataLimite) {
         this.dataLimite = dataLimite;
@@ -51,7 +50,7 @@ public class Tarefa implements Serializable {
         this.etiquetas = etiquetas;
     }
 
-    public Tarefa(){};
+    public Tarefa(){}
 
     public String getTitulo() {
         return titulo;
@@ -106,7 +105,7 @@ public class Tarefa implements Serializable {
         return this;
     }
 
-    public String getHorarioAtualizacao() {
+    private String getHorarioAtualizacao() {
         return format.format(dataAtu);
     }
 

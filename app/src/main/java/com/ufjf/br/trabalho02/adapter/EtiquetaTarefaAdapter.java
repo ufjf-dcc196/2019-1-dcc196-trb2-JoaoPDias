@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.ufjf.br.trabalho02.R;
 import com.ufjf.br.trabalho02.contract.TarefaContract;
@@ -33,7 +31,7 @@ public class EtiquetaTarefaAdapter extends RecyclerView.Adapter<EtiquetaTarefaAd
         return etiqueta;
     }
 
-    public List<Etiqueta> getListEtiqueta(Cursor cursor){
+    private List<Etiqueta> getListEtiqueta(Cursor cursor){
         List<Etiqueta> etiquetaList = new ArrayList<>();
         for (int i = 0; i <cursor.getCount();i++){
             int idxTitulo = cursor.getColumnIndexOrThrow(TarefaContract.Etiqueta.COLUMN_NAME_TITULO);
@@ -70,7 +68,7 @@ public class EtiquetaTarefaAdapter extends RecyclerView.Adapter<EtiquetaTarefaAd
         notifyDataSetChanged();
     }
 
-    public interface OnEtiquetaTarefaClickListener {
+    private interface OnEtiquetaTarefaClickListener {
         void onEtiquetaClick(View tarefaView, int position);
     }
 
@@ -104,11 +102,11 @@ public class EtiquetaTarefaAdapter extends RecyclerView.Adapter<EtiquetaTarefaAd
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        CheckedTextView mCheckedTextView;
+        final CheckedTextView mCheckedTextView;
 
-        public ViewHolder(@NonNull View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mCheckedTextView = (CheckedTextView) itemView.findViewById(R.id.checked_text_view);
+            mCheckedTextView = itemView.findViewById(R.id.checked_text_view);
             itemView.setOnClickListener(this);
         }
 

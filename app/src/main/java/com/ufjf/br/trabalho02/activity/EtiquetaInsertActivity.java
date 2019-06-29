@@ -21,7 +21,7 @@ public class EtiquetaInsertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_etiqueta_insert);
-        txtTitulo = (EditText) findViewById(R.id.edt_tituloEtiqueta);
+        txtTitulo = findViewById(R.id.edt_tituloEtiqueta);
         Button botaoSalvarEtiquta = findViewById(R.id.buttonSalvarEtiqueta);
         botaoSalvarEtiquta.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -15,7 +15,7 @@ import com.ufjf.br.trabalho02.contract.TarefaContract;
 import com.ufjf.br.trabalho02.dao.EtiquetaDAO;
 import com.ufjf.br.trabalho02.model.Etiqueta;
 
-import java.text.ParseException;
+import org.jetbrains.annotations.NotNull;
 
 public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.ViewHolder> {
     private Cursor cursor;
@@ -46,8 +46,7 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.ViewHo
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View tarefaView = inflater.inflate(R.layout.itemlista_layout, viewGroup, false);
-        ViewHolder holder = new ViewHolder(tarefaView, context);
-        return holder;
+        return new ViewHolder(tarefaView, context);
     }
 
     public Etiqueta getEtiqueta(int position) {
@@ -78,14 +77,14 @@ public class EtiquetaAdapter extends RecyclerView.Adapter<EtiquetaAdapter.ViewHo
     }
 
     @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    public void onAttachedToRecyclerView(@NotNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView txtTitulo = itemView.findViewById(R.id.layout_text_item);
-        private ImageButton delete = (ImageButton) itemView.findViewById(R.id.delete_button);
-        private Context context;
+        private final TextView txtTitulo = itemView.findViewById(R.id.layout_text_item);
+        private final ImageButton delete = itemView.findViewById(R.id.delete_button);
+        private final Context context;
 
         private ViewHolder(View itemView, Context context) {
             super(itemView);

@@ -5,7 +5,8 @@ import android.provider.BaseColumns;
 
 public class TarefaContract {
 
-    public TarefaContract(){};
+    public TarefaContract(){}
+
     public static final class Tarefa implements BaseColumns{
 
         public static final String TABLE_NAME = "tarefa";

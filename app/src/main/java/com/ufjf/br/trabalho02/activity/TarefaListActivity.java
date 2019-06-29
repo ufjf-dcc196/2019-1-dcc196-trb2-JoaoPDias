@@ -6,9 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -20,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.ufjf.br.trabalho02.R;
@@ -28,7 +25,6 @@ import com.ufjf.br.trabalho02.adapter.TarefaAdapter;
 import com.ufjf.br.trabalho02.dao.EtiquetaTarefaDAO;
 import com.ufjf.br.trabalho02.dao.TarefaDAO;
 import com.ufjf.br.trabalho02.model.Etiqueta;
-import com.ufjf.br.trabalho02.model.Tarefa;
 
 public class TarefaListActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private Toolbar toolbar;
@@ -36,8 +32,8 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
     private NavigationView navigationView;
     private TarefaAdapter adapter;
     private Etiqueta etiqueta;
-    public static final int REQUEST_TAREFA_CADASTRAR = 1;
-    public static final int REQUEST_TAREFA_EDITAR = 2;
+    private static final int REQUEST_TAREFA_CADASTRAR = 1;
+    private static final int REQUEST_TAREFA_EDITAR = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +45,12 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
             this.etiqueta = (Etiqueta) bundle.get("etiqueta");
         }
         setSupportActionBar(toolbar);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerLayout = findViewById(R.id.drawerLayout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.navView);
+        navigationView = findViewById(R.id.navView);
         navigationView.setNavigationItemSelectedListener(this);
 
         final RecyclerView rv = findViewById(R.id.recyclerTarefa);
@@ -133,6 +129,7 @@ public class TarefaListActivity extends AppCompatActivity implements NavigationV
                 Toast.makeText(this, "Edição realizado com sucesso", Toast.LENGTH_SHORT).show();
                 if (this.etiqueta == null) {
                     this.adapter = new TarefaAdapter(TarefaDAO.getInstance().getTarefasByEstado(this), null);
+
                 } else {
                     this.adapter = new TarefaAdapter(EtiquetaTarefaDAO.getInstance().getTarefasByEtiqueta(this, etiqueta), etiqueta);
                 }
